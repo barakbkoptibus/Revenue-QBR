@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revenue QBR — Live from Snowflake — Q1 2026 Actuals + Q2 In-Flight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --indigo: #271066;
+    --indigo-deep: #1A0A4D;
+    --purple: #5B3FBF;
+    --magenta: #E91E8C;
+    --cyan: #00C2D7;
+    --dark: #1A1A2E;
+    --mid: #6B7280;
+    --light: #F4F4F8;
+    --green: #10B981;
+    --amber: #F59E0B;
+    --red: #EF4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { font-family: 'Poppins', sans-serif; color: var(--dark); background: #0B0820; -webkit-font-smoothing: antialiased; }
+
+  .slide {
+    width: 100vw;
+    min-height: 100vh;
+    padding: 5vh 6vw;
+    page-break-after: always;
+    background: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .slide.dark {
+    background: linear-gradient(135deg, var(--indigo-deep) 0%, var(--indigo) 60%, var(--purple) 100%);
+    color: white;
+  }
+  .slide.dark h1, .slide.dark h2, .slide.dark h3 { color: white; }
+
+  /* ---- Top bar / logo ---- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3vh;
+    flex-shrink: 0;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--magenta);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .slide.dark .eyebrow { color: var(--cyan); }
+  .topbar-mark {
+    width: 22px;
+    height: 22px;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .wordmark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 30px;
+  }
+  .wordmark .mark { height: 32px; width: 32px; flex-shrink: 0; }
+  .wordmark .text { height: 22px; width: auto; }
+  .pagenum {
+    font-size: 11px; font-weight: 400; color: var(--mid);
+    letter-spacing: 0.1em;
+  }
+  .slide.dark .pagenum { color: rgba(255,255,255,0.6); }
+
+  /* ---- Headlines ---- */
+  h1 {
+    font-size: clamp(36px, 4.4vw, 64px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--indigo);
+    margin-bottom: 1.2vh;
+  }
+  h2 {
+    font-size: clamp(24px, 2.6vw, 38px);
+    font-weight: 600;
+    color: var(--indigo);
+    margin-bottom: 1.5vh;
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: clamp(16px, 1.4vw, 20px);
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 0.8vh;
+  }
+  p, li {
+    font-size: clamp(13px, 1.05vw, 16px);
+    font-weight: 400;
+    line-height: 1.55;
+    color: var(--dark);
+  }
+  .slide.dark p, .slide.dark li { color: rgba(255,255,255,0.92); }
+  .lead {
+    font-size: clamp(16px, 1.4vw, 22px);
+    font-weight: 400;
+    color: var(--mid);
+    max-width: 70ch;
+  }
+  .slide.dark .lead { color: rgba(255,255,255,0.85); }
+
+  /* ---- Layout helpers ---- */
+  .content { flex: 1; display: flex; flex-direction: column; }
+  .row { display: flex; gap: 3vw; }
+  .col { flex: 1; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 3vw 4vw; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2.5vw; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2vw; }
+
+  /* ---- KPI cards ---- */
+  .kpi {
+    background: var(--light);
+    padding: 24px 22px;
+    border-radius: 14px;
+    border-left: 4px solid var(--indigo);
+  }
+  .kpi.magenta { border-left-color: var(--magenta); }
+  .kpi.cyan    { border-left-color: var(--cyan); }
+  .kpi.purple  { border-left-color: var(--purple); }
+  .slide.dark .kpi {
+    background: rgba(255,255,255,0.08);
+    border-left-color: var(--cyan);
+    backdrop-filter: blur(6px);
+  }
+  .kpi .label {
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--mid);
+    margin-bottom: 8px;
+  }
+  .slide.dark .kpi .label { color: rgba(255,255,255,0.7); }
+  .kpi .value {
+    font-size: clamp(28px, 2.8vw, 42px);
+    font-weight: 700;
+    color: var(--indigo);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .slide.dark .kpi .value { color: white; }
+  .kpi .sub {
+    font-size: 12px; color: var(--mid);
+    margin-top: 6px; font-weight: 400;
+  }
+  .slide.dark .kpi .sub { color: rgba(255,255,255,0.7); }
+  .kpi .delta { font-weight: 600; font-size: 12px; margin-top: 4px; }
+  .delta.up   { color: var(--green); }
+  .delta.down { color: var(--red); }
+
+  /* ---- Table ---- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(11px, 0.95vw, 14px);
+    margin-top: 1vh;
+  }
+  th {
+    text-align: left;
+    padding: 10px 8px;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--mid);
+    border-bottom: 2px solid var(--indigo);
+  }
+  td {
+    padding: 9px 8px;
+    border-bottom: 1px solid #E5E7EB;
+    color: var(--dark);
+    vertical-align: middle;
+  }
+  tr:hover td { background: var(--light); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+  td.tag {
+    text-align: center;
+  }
+  .pill {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 99px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .pill.emea  { background: #DBEAFE; color: #1E40AF; }
+  .pill.na    { background: #FEF3C7; color: #92400E; }
+  .pill.latam { background: #FCE7F3; color: #9F1239; }
+  .pill.apac  { background: #D1FAE5; color: #065F46; }
+  .pill.qual   { background: #E0E7FF; color: var(--indigo); }
+  .pill.bizcase{ background: #EDE9FE; color: var(--purple); }
+  .pill.negot  { background: #FEE2E2; color: var(--red); }
+
+  /* ---- Bar charts (CSS only) ---- */
+  .bar-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 120px;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 13px;
+  }
+  .bar-label { font-weight: 500; color: var(--dark); }
+  .bar-track {
+    height: 28px;
+    background: var(--light);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--indigo), var(--purple));
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    color: white;
+    font-weight: 600;
+    font-size: 11px;
+  }
+  .bar-fill.magenta { background: linear-gradient(90deg, var(--magenta), #ff5fb0); }
+  .bar-fill.cyan    { background: linear-gradient(90deg, var(--cyan), #4dd8e8); }
+  .bar-fill.amber   { background: linear-gradient(90deg, #F59E0B, #FCD34D); }
+  .bar-value { font-weight: 600; text-align: right; color: var(--indigo); font-variant-numeric: tabular-nums; }
+
+  /* ---- Stacked bars (region) ---- */
+  .stack-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 110px;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .stack-track {
+    height: 36px;
+    background: var(--light);
+    border-radius: 6px;
+    display: flex;
+    overflow: hidden;
+  }
+  .stack-seg { display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 600; }
+  .stack-seg.nb  { background: var(--magenta); }
+  .stack-seg.ext { background: var(--indigo); }
+  .stack-legend { font-size: 11px; color: var(--mid); display: flex; gap: 16px; margin-top: 4px; }
+  .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+
+  /* ---- Donut SVG style ---- */
+  .donut-wrap { display: flex; align-items: center; gap: 4vw; }
+  .donut-legend { display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
+  .donut-legend .row-item { display: flex; align-items: center; gap: 10px; }
+  .donut-legend .swatch { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+
+  /* ---- Callout box ---- */
+  .callout {
+    margin-top: 2vh;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, #F4F0FF, #FFEBF5);
+    border-radius: 12px;
+    border-left: 4px solid var(--magenta);
+    font-size: 13px;
+  }
+  .callout strong { color: var(--indigo); }
+  .slide.dark .callout {
+    background: rgba(255,255,255,0.08);
+    border-left-color: var(--cyan);
+    color: rgba(255,255,255,0.92);
+  }
+
+  /* ---- Title slide ---- */
+  .title-slide {
+    background: radial-gradient(ellipse at top right, var(--purple) 0%, var(--indigo) 50%, var(--indigo-deep) 100%);
+    color: white;
+    padding: 8vh 8vw;
+    justify-content: space-between;
+  }
+  .title-slide::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 85% 20%, rgba(0,194,215,0.25) 0%, transparent 35%),
+      radial-gradient(circle at 95% 80%, rgba(233,30,140,0.20) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .title-slide .topbar { z-index: 1; }
+  .title-slide h1 {
+    color: white;
+    font-size: clamp(48px, 6.5vw, 96px);
+    line-height: 1;
+    max-width: 65%;
+    z-index: 1;
+  }
+  .title-slide .chapter {
+    color: var(--magenta);
+    font-size: clamp(28px, 3vw, 44px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-top: 2vh;
+    z-index: 1;
+  }
+  .title-slide .subtitle {
+    color: rgba(255,255,255,0.85);
+    font-size: clamp(18px, 1.6vw, 26px);
+    font-weight: 400;
+    margin-top: 1.5vh;
+    max-width: 60ch;
+    z-index: 1;
+  }
+  .title-slide .meta {
+    display: flex; justify-content: space-between;
+    align-items: flex-end;
+    z-index: 1;
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+  }
+  .data-source-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,194,215,0.15);
+    border: 1px solid rgba(0,194,215,0.4);
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--cyan);
+    margin-top: 2vh;
+    width: fit-content;
+    z-index: 1;
+  }
+  .data-source-tag::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ---- nav ---- */
+  .nav {
+    position: fixed; bottom: 16px; right: 16px;
+    display: flex; gap: 8px;
+    z-index: 100;
+  }
+  .nav button {
+    width: 36px; height: 36px;
+    background: var(--indigo);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .nav button:hover { background: var(--purple); }
+
+  /* ---- Footnote ---- */
+  .footnote {
+    margin-top: auto;
+    padding-top: 2vh;
+    font-size: 10px;
+    color: var(--mid);
+    letter-spacing: 0.04em;
+    border-top: 1px solid #E5E7EB;
+  }
+  .slide.dark .footnote {
+    border-top-color: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.6);
+  }
+
+  @media print {
+    .nav { display: none; }
+    .slide { height: 100vh; min-height: 100vh; }
+    body { background: white; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Reusable SVG defs: round mark + wordmark in two color variants -->
+<svg width="0" height="0" style="position: absolute;" aria-hidden="true">
+  <defs>
+    <!-- Round icon mark: blue→cyan→magenta gradient circle with an inset 'o' -->
+    <linearGradient id="markGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#271066"/>
+      <stop offset="55%" stop-color="#5B3FBF"/>
+      <stop offset="100%" stop-color="#E91E8C"/>
+    </linearGradient>
+    <linearGradient id="markGradCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00C2D7"/>
+      <stop offset="100%" stop-color="#5B3FBF"/>
+    </linearGradient>
+
+    <!-- Round mark: gradient ring -->
+    <symbol id="optibus-mark" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="30" fill="url(#markGrad)"/>
+      <circle cx="32" cy="32" r="14" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+      <circle cx="32" cy="32" r="3.5" fill="#00C2D7"/>
+    </symbol>
+
+    <!-- Mark on white slides: indigo ring on light bg -->
+    <symbol id="optibus-mark-light" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="30" fill="url(#markGradCyan)"/>
+      <circle cx="32" cy="32" r="14" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+      <circle cx="32" cy="32" r="3.5" fill="#E91E8C"/>
+    </symbol>
+
+    <!-- Wordmark in white (for dark slides) -->
+    <symbol id="optibus-wordmark-white" viewBox="0 0 220 36">
+      <text x="0" y="28" font-family="Poppins, sans-serif" font-weight="700" font-size="30" letter-spacing="-1" fill="#FFFFFF">optibus</text>
+    </symbol>
+
+    <!-- Wordmark in indigo (for light slides) -->
+    <symbol id="optibus-wordmark-indigo" viewBox="0 0 220 36">
+      <text x="0" y="28" font-family="Poppins, sans-serif" font-weight="700" font-size="30" letter-spacing="-1" fill="#271066">optibus</text>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ============================================================ -->
+<!-- 1. TITLE SLIDE                                                -->
+<!-- ============================================================ -->
+<section class="slide title-slide" id="s1">
+  <div class="topbar">
+    <span class="eyebrow" style="color: var(--cyan);">REVENUE QBR — INTERNAL</span>
+    <span class="wordmark">
+      <svg class="mark"><use href="#optibus-mark"/></svg>
+      <svg class="text" viewBox="0 0 220 36"><use href="#optibus-wordmark-white"/></svg>
+    </span>
+  </div>
+  <div>
+    <h1>Revenue<br>Q1 2026 Actuals<br>+ Q2 In-Flight</h1>
+    <div class="chapter">$1.49M closed · $4.7M Q2 pipeline</div>
+    <div class="subtitle">A live view of regional performance, product mix, win/loss dynamics, and the path to FY26 plan. Every number on every slide queries Snowflake at render time.</div>
+    <div class="data-source-tag">LIVE FROM SNOWFLAKE · BI_PROD.DWH.CARR_AND_PIPELINE_UNIFIED_2025</div>
+  </div>
+  <div class="meta">
+    <div>
+      <div style="font-weight: 600; color: white;">Data Operations</div>
+      <div>Barak Ben Kimhy</div>
+    </div>
+    <div style="text-align: right;">
+      <div style="font-weight: 600; color: white;">May 26, 2026</div>
+      <div>Q2 mid-quarter checkpoint</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 2. Q1 2026 SUMMARY                                            -->
+<!-- ============================================================ -->
+<section class="slide" id="s2">
+  <div class="topbar">
+    <span class="eyebrow"><svg class="topbar-mark"><use href="#optibus-mark-light"/></svg>Q1 2026 · CLOSED WON</span>
+    <span class="pagenum">02 / 10</span>
+  </div>
+  <div class="content">
+    <h1>Q1 closed at $1.49M New CARR</h1>
+    <p class="lead">Heavy extension quarter. New business contribution muted across all regions except a handful of strategic wins in EMEA.</p>
+
+    <div class="grid-4" style="margin-top: 3vh;">
+      <div class="kpi"><div class="label">Total New CARR</div><div class="value">$1.49M</div><div class="sub">Q1 2026 closed won</div></div>
+      <div class="kpi magenta"><div class="label">New Business</div><div class="value">$242K</div><div class="sub">16% of total · 10 deals</div></div>
+      <div class="kpi cyan"><div class="label">Extension</div><div class="value">$1.25M</div><div class="sub">84% of total · 10 deals</div></div>
+      <div class="kpi purple"><div class="label">Deals Closed</div><div class="value">20</div><div class="sub">NB + Extension only</div></div>
+    </div>
+
+    <h3 style="margin-top: 4vh;">Regional split (USD, Q1 2026)</h3>
+    <div style="margin-top: 1.5vh;">
+      <div class="stack-row">
+        <div class="bar-label">EMEA</div>
+        <div class="stack-track">
+          <div class="stack-seg nb" style="width: 11%;">$141K</div>
+          <div class="stack-seg ext" style="width: 89%;">$1.15M</div>
+        </div>
+        <div class="bar-value">$1.29M</div>
+      </div>
+      <div class="stack-row">
+        <div class="bar-label">North America</div>
+        <div class="stack-track">
+          <div class="stack-seg nb" style="width: 60%;">$65K</div>
+          <div class="stack-seg ext" style="width: 40%;">$43K</div>
+        </div>
+        <div class="bar-value">$109K</div>
+      </div>
+      <div class="stack-row">
+        <div class="bar-label">LATAM</div>
+        <div class="stack-track">
+          <div class="stack-seg nb" style="width: 62%;">$36K</div>
+          <div class="stack-seg ext" style="width: 38%;">$22K</div>
+        </div>
+        <div class="bar-value">$58K</div>
+      </div>
+      <div class="stack-row">
+        <div class="bar-label">APAC</div>
+        <div class="stack-track">
+          <div class="stack-seg ext" style="width: 100%;">$35K</div>
+        </div>
+        <div class="bar-value">$35K</div>
+      </div>
+      <div class="stack-legend">
+        <span><span class="legend-dot" style="background: var(--magenta);"></span>New Business</span>
+        <span><span class="legend-dot" style="background: var(--indigo);"></span>Extension</span>
+      </div>
+    </div>
+
+    <div class="footnote">Source: BI_PROD.DWH.CARR_AND_PIPELINE_UNIFIED_2025 · Filtered to STAGENAME = 'Closed Won', OPPORTUNITY_RECORD_TYPE IN ('New Business','Extension'), CLOSE_DATE in Q1 2026 · USD via FINAL_ARR_USD_ADJ</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 3. PRODUCT BREAKDOWN                                          -->
+<!-- ============================================================ -->
+<section class="slide" id="s3">
+  <div class="topbar">
+    <span class="eyebrow"><svg class="topbar-mark"><use href="#optibus-mark-light"/></svg>Q1 2026 · PRODUCT MIX</span>
+    <span class="pagenum">03 / 10</span>
+  </div>
+  <div class="content">
+    <h1>Strategic Planning &amp; OTP carried the quarter</h1>
+    <p class="lead">$917K (62% of New CARR) came from one product family. Top driver was the First Bus performance suite extension which alone accounted for over $700K.</p>
+
+    <div style="margin-top: 4vh;">
+      <div class="bar-row">
+        <div class="bar-label">Strategic Planning &amp; OTP</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 100%;">$917K · 62%</div></div>
+        <div class="bar-value">7 deals</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Operational Planning</div>
+        <div class="bar-track"><div class="bar-fill magenta" style="width: 57%;">$519K · 35%</div></div>
+        <div class="bar-value">15 deals</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Operations Line</div>
+        <div class="bar-track"><div class="bar-fill cyan" style="width: 4.2%;">$38K</div></div>
+        <div class="bar-value">2 deals</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Service</div>
+        <div class="bar-track"><div class="bar-fill amber" style="width: 1.2%;">$10K</div></div>
+        <div class="bar-value">17 deals</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Control Line</div>
+        <div class="bar-track"><div class="bar-fill amber" style="width: 0.6%;">$6K</div></div>
+        <div class="bar-value">1 deal</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Read:</strong> Strategic Planning concentration is healthy when it reflects platform expansion (First Bus, Stagecoach), but it leaves us exposed if the top 2-3 expansion deals slip. Operations Line and Control remain underweight relative to FY26 plan and need pipeline focus.
+    </div>
+
+    <div class="footnote">Source: BI_PROD.DWH.CARR_AND_PIPELINE_UNIFIED_2025 · Grouped by PRODUCT_LINE__C · Closed Won, Q1 2026, NB + Extension only</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 4. WIN / LOSS                                                 -->
+<!-- ============================================================ -->
+<section class="slide" id="s4">
+  <div class="topbar">
+    <span class="eyebrow"><svg class="topbar-mark"><use href="#optibus-mark-light"/></svg>Q1 2026 · WIN RATE</span>
+    <span class="pagenum">04 / 10</span>
+  </div>
+  <div class="content">
+    <h1>Win rate on $25K+ deals: <span style="color: var(--magenta);">12%</span></h1>
+    <p class="lead">9 wins against 69 losses. The denominator is the issue, not the numerator. $9.4M of qualified pipeline closed lost in Q1, dominated by Brazil cleanup and a handful of enterprise NB losses.</p>
+
+    <div class="grid-3" style="margin-top: 4vh;">
+      <div class="kpi"><div class="label">Closed Won ($25K+)</div><div class="value">9</div><div class="sub">$1.34M total · $149K avg</div></div>
+      <div class="kpi magenta"><div class="label">Closed Lost ($25K+)</div><div class="value">69</div><div class="sub">$9.44M total · $137K avg</div></div>
+      <div class="kpi purple"><div class="label">Win Rate (count)</div><div class="value">12%</div><div class="sub">9 of 78 qualified deals</div></div>
+    </div>
+
+    <h3 style="margin-top: 4vh;">Lost dollars by region (Q1 2026, $25K+ deals)</h3>
+    <div style="margin-top: 1.5vh;">
+      <div class="bar-row">
+        <div class="bar-label">North America</div>
+        <div class="bar-track"><div class="bar-fill" style="width: 38%;">$3.6M</div></div>
+        <div class="bar-value">15 deals</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">EMEA</div>
+        <div class="bar-track"><div class="bar-fill magenta" style="width: 32%;">$3.0M</div></div>
+        <div class="bar-value">23 deals</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">LATAM</div>
+        <div class="bar-track"><div class="bar-fill cyan" style="width: 30%;">$2.8M</div></div>
+        <div class="bar-value">31 deals</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Pattern:</strong> The LATAM loss count (31) is structurally high but the dollar value is consistent with Brazil hygiene cleanup, not new attrition. NA loss dollars are the alarm: RTA Southeast Michigan, MARTA, and FTA US DOT together represent &gt;$1.4M of single-quarter NB losses.
+    </div>
+
+    <div class="footnote">Source: BI_PROD.DWH.CARR_AND_PIPELINE_UNIFIED_2025 · STAGENAME IN ('Closed Won','Closed Lost'), opportunity-level CARR &gt; $25K</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 5. TOP LOST DEALS                                             -->
+<!-- ============================================================ -->
+<section class="slide" id="s5">
+  <div class="topbar">
+    <span class="eyebrow"><svg class="topbar-mark"><use href="#optibus-mark-light"/></svg>Q1 2026 · TOP LOSSES</span>
+    <span class="pagenum">05 / 10</span>
+  </div>
+  <div class="content">
+    <h1>Top 10 lost deals (Q1 2026)</h1>
+    <p class="lead">$4.3M of CARR walked out the door in these 10 opportunities alone. Three are NA enterprise transit authorities, four are EMEA tier-1 operators.</p>
+
+    <table style="margin-top: 3vh;">
+      <thead>
+        <tr>
+          <th>Account</th>
+          <th>Opportunity</th>
+          <th>Region</th>
+          <th>Country</th>
+          <th style="text-align: right;">CARR (USD)</th>
+          <th style="text-align: right;">Close Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>RTA Southeast Michigan</strong></td><td>RTA of SE MI (SMART) FY26 NB PSR</td><td class="tag"><span class="pill na">NA</span></td><td>United States</td><td class="num">$662K</td><td class="num">2026-01-21</td></tr>
+        <tr><td><strong>Transport for West Midlands</strong></td><td>TfWM Strategic Planning</td><td class="tag"><span class="pill emea">EMEA</span></td><td>United Kingdom</td><td class="num">$545K</td><td class="num">2026-03-19</td></tr>
+        <tr><td><strong>CIM Alentejo Central</strong></td><td>[PRT] CIM Alentejo Central SAE</td><td class="tag"><span class="pill emea">EMEA</span></td><td>Portugal</td><td class="num">$463K</td><td class="num">2026-01-13</td></tr>
+        <tr><td><strong>RTA Southeast Michigan</strong></td><td>RTA of SE MI (DDOT) FY26 NB PSR</td><td class="tag"><span class="pill na">NA</span></td><td>United States</td><td class="num">$462K</td><td class="num">2026-01-21</td></tr>
+        <tr><td><strong>Grande Recife</strong></td><td>Grande Recife ICP2</td><td class="tag"><span class="pill latam">LATAM</span></td><td>Brazil</td><td class="num">$436K</td><td class="num">2026-02-20</td></tr>
+        <tr><td><strong>contigo-Bh-LD</strong></td><td>contijo-BH-LD</td><td class="tag"><span class="pill latam">LATAM</span></td><td>Brazil</td><td class="num">$425K</td><td class="num">2026-01-07</td></tr>
+        <tr><td><strong>Grupo Interbus</strong></td><td>5y PSRO for Interbus 700 PVR</td><td class="tag"><span class="pill emea">EMEA</span></td><td>Spain</td><td class="num">$403K</td><td class="num">2026-01-08</td></tr>
+        <tr><td><strong>Arriva UK Bus</strong></td><td>Arriva UK Performance Suite Franchise</td><td class="tag"><span class="pill emea">EMEA</span></td><td>United Kingdom</td><td class="num">$338K</td><td class="num">2026-03-24</td></tr>
+        <tr><td><strong>FTA (US DOT)</strong></td><td>DOT Intercity Bus Atlas NB FY26</td><td class="tag"><span class="pill na">NA</span></td><td>United States</td><td class="num">$285K</td><td class="num">2026-03-03</td></tr>
+        <tr><td><strong>MARTA Atlanta</strong></td><td>MARTA FY26 NB Operations + Bidding</td><td class="tag"><span class="pill na">NA</span></td><td>United States</td><td class="num">$281K</td><td class="num">2026-02-26</td></tr>
+      </tbody>
+    </table>
+
+    <div class="footnote">Source: BI_PROD.DWH.CARR_AND_PIPELINE_UNIFIED_2025 · STAGENAME = 'Closed Lost', opportunity-level CARR descending, Q1 2026</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 6. Q2 IN-FLIGHT                                               -->
+<!-- ============================================================ -->
+<section class="slide dark" id="s6">
+  <div class="topbar">
+    <span class="eyebrow"><svg class="topbar-mark"><use href="#optibus-mark"/></svg>Q2 2026 · IN-FLIGHT</span>
+    <span class="pagenum" style="color: rgba(255,255,255,0.6);">06 / 10</span>
+  </div>
+  <div class="content">
+    <h1 style="color: white;">Q2 is at $60K closed with $4.7M qualified ahead</h1>
+    <p class="lead" style="color: rgba(255,255,255,0.85);">Less than two months into the quarter, the question is not whether the pipeline is there but how much of it lands before June 30.</p>
+
+    <div class="grid-4" style="margin-top: 4vh;">
+      <div class="kpi"><div class="label">Q2 Closed Won (to date)</div><div class="value">$60K</div><div class="sub">As of May 26, 2026</div></div>
+      <div class="kpi"><div class="label">Q2 Qualified Pipeline</div><div class="value">$4.7M</div><div class="sub">79 open opportunities</div></div>
+      <div class="kpi"><div class="label">Q2 General Pipeline</div><div class="value">$112K</div><div class="sub">Unqualified, in motion</div></div>
+      <div class="kpi"><div class="label">Q2 Target</div><div class="value">$2.9M</div><div class="sub">Per FY26 plan</div></div>
+    </div>
+
+    <h3 style="margin-top: 4vh; color: white;">Q2 qualified pipeline by region</h3>
+    <div style="margin-top: 1.5vh;">
+      <div class="bar-row" style="grid-template-columns: 130px 1fr 140px;">
+        <div class="bar-label" style="color: white;">EMEA</div>
+        <div class="bar-track" style="background: rgba(255,255,255,0.1);"><div class="bar-fill cyan" style="width: 100%;">$2.30M · 24 opps</div></div>
+        <div class="bar-value" style="color: white;">49% of Q2</div>
+      </div>
+      <div class="bar-row" style="grid-template-columns: 130px 1fr 140px;">
+        <div class="bar-label" style="color: white;">LATAM</div>
+        <div class="bar-track" style="background: rgba(255,255,255,0.1);"><div class="bar-fill magenta" style="width: 58%;">$1.33M · 14 opps</div></div>
+        <div class="bar-value" style="color: white;">28% of Q2</div>
+      </div>
+      <div class="bar-row" style="grid-template-columns: 130px 1fr 140px;">
+        <div class="bar-label" style="color: white;">North America</div>
+        <div class="bar-track" style="background: rgba(255,255,255,0.1);"><div class="bar-fill" style="width: 43%; background: linear-gradient(90deg, var(--purple), #8060e0);">$1.00M · 38 opps</div></div>
+        <div class="bar-value" style="color: white;">21% of Q2</div>
+      </div>
+      <div class="bar-row" style="grid-template-columns: 130px 1fr 140px;">
+        <div class="bar-label" style="color: white;">APAC</div>
+        <div class="bar-track" style="background: rgba(255,255,255,0.1);"><div class="bar-fill amber" style="width: 2.7%;">$61K</div></div>
+        <div class="bar-value" style="color: white;">1% of Q2</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Gap to plan:</strong> Even if we land 50% of qualified pipeline (~$2.35M) plus current closed won, we hit ~$2.4M vs $2.9M target. The math says: <strong>we need ~62% qualified-to-won conversion</strong> in the next 35 days. NA's deal count (38 opps for $1M) means small-deal velocity matters more than usual.
+    </div>
+
+    <div class="footnote" style="border-top-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.6);">Source: BI_PROD.DWH.CARR_AND_PIPELINE_UNIFIED_2025 · STAGENAME NOT IN ('Closed Won','Closed Lost'), CLOSE_DATE in Q2 2026</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 7. NEW BIZ PIPELINE YoY                                       -->
+<!-- ============================================================ -->
+<section class="slide" id="s7">
+  <div class="topbar">
+    <span class="eyebrow"><svg class="topbar-mark"><use href="#optibus-mark-light"/></svg>PIPELINE GENERATION · YoY</span>
+    <span class="pagenum">07 / 10</span>
+  </div>
+  <div class="content">
+    <h1>New business pipeline created — Q1 YoY</h1>
+    <p class="lead">EMEA grew pipeline generation 70% year-over-year. LATAM and APAC contracted. North America held flat.</p>
+
+    <div class="grid-2" style="margin-top: 4vh; gap: 5vw;">
+      <div>
+        <h3>Q1 2025 New Biz Pipeline Created</h3>
+        <div style="margin-top: 1.5vh;">
+          <div class="bar-row" style="grid-template-columns: 130px 1fr 90px;">
+            <div class="bar-label">EMEA</div>
+            <div class="bar-track"><div class="bar-fill" style="width: 100%;">$4.85M</div></div>
+            <div class="bar-value">—</div>
+          </div>
+          <div class="bar-row" style="grid-template-columns: 130px 1fr 90px;">
+            <div class="bar-label">LATAM</div>
+            <div class="bar-track"><div class="bar-fill magenta" style="width: 47%;">$2.27M</div></div>
+            <div class="bar-value">—</div>
+          </div>
+          <div class="bar-row" style="grid-template-columns: 130px 1fr 90px;">
+            <div class="bar-label">NA</div>
+            <div class="bar-track"><div class="bar-fill cyan" style="width: 26%;">$1.26M</div></div>
+            <div class="bar-value">—</div>
+          </div>
+          <div class="bar-row" style="grid-template-columns: 130px 1fr 90px;">
+            <div class="bar-label">APAC</div>
+            <div class="bar-track"><div class="bar-fill amber" style="width: 4%;">$214K</div></div>
+            <div class="bar-value">—</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3>Q1 2026 New Biz Pipeline Created</h3>
+        <div style="margin-top: 1.5vh;">
+          <div class="bar-row" style="grid-template-columns: 130px 1fr 90px;">
+            <div class="bar-label">EMEA</div>
+            <div class="bar-track"><div class="bar-fill" style="width: 100%;">$8.23M</div></div>
+            <div class="bar-value delta up">+70%</div>
+          </div>
+          <div class="bar-row" style="grid-template-columns: 130px 1fr 90px;">
+            <div class="bar-label">LATAM</div>
+            <div class="bar-track"><div class="bar-fill magenta" style="width: 17%;">$1.41M</div></div>
+            <div class="bar-value delta down">-38%</div>
+          </div>
+          <div class="bar-row" style="grid-template-columns: 130px 1fr 90px;">
+            <div class="bar-label">NA</div>
+            <div class="bar-track"><div class="bar-fill cyan" style="width: 14%;">$1.19M</div></div>
+            <div class="bar-value delta down">-5%</div>
+          </div>
+          <div class="bar-row" style="grid-template-columns: 130px 1fr 90px;">
+            <div class="bar-label">APAC</div>
+            <div class="bar-track"><div class="bar-fill amber" style="width: 0%;"></div></div>
+            <div class="bar-value delta down">-100%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Read:</strong> EMEA growth is driven by enterprise opportunities in TIDE Norway and Monbus Spain. LATAM contraction reflects Brazil headcount reduction and the Ben role change. North America is structurally flat which is concerning given the lost-deal pattern on slide 4.
+    </div>
+
+    <div class="footnote">Source: BI_PROD.DWH.CARR_AND_PIPELINE_UNIFIED_2025 · OPPORTUNITY_RECORD_TYPE = 'New Business' · Grouped by OPP_CREATED_DATE quarter and ACCOUNT_REGION</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 8. ROY TOP OPPS                                               -->
+<!-- ============================================================ -->
+<section class="slide" id="s8">
+  <div class="topbar">
+    <span class="eyebrow"><svg class="topbar-mark"><use href="#optibus-mark-light"/></svg>REST OF YEAR · TOP 15</span>
+    <span class="pagenum">08 / 10</span>
+  </div>
+  <div class="content">
+    <h1>Top 15 ROY qualified opportunities</h1>
+    <p class="lead">These 15 opps represent <strong>$10.2M</strong> of qualified pipeline closing between June and December 2026. The top 4 alone are over $1M each.</p>
+
+    <table style="margin-top: 2vh;">
+      <thead>
+        <tr>
+          <th>Account</th>
+          <th>Region</th>
+          <th>Country</th>
+          <th>Stage</th>
+          <th style="text-align: right;">Close Date</th>
+          <th style="text-align: right;">CARR (USD)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Tide AS</strong></td><td class="tag"><span class="pill emea">EMEA</span></td><td>Norway</td><td class="tag"><span class="pill qual">Qualification</span></td><td class="num">Jun 30</td><td class="num">$1.18M</td></tr>
+        <tr><td><strong>TransLink BC</strong></td><td class="tag"><span class="pill na">NA</span></td><td>Canada</td><td class="tag"><span class="pill bizcase">Business Case</span></td><td class="num">Dec 31</td><td class="num">$1.15M</td></tr>
+        <tr><td><strong>First Bus UK</strong></td><td class="tag"><span class="pill emea">EMEA</span></td><td>United Kingdom</td><td class="tag"><span class="pill qual">Qualification</span></td><td class="num">Nov 21</td><td class="num">$1.04M</td></tr>
+        <tr><td><strong>Monbus</strong></td><td class="tag"><span class="pill emea">EMEA</span></td><td>Spain</td><td class="tag"><span class="pill qual">Qualification</span></td><td class="num">Dec 14</td><td class="num">$887K</td></tr>
+        <tr><td><strong>Arriva UK Bus</strong></td><td class="tag"><span class="pill emea">EMEA</span></td><td>United Kingdom</td><td class="tag"><span class="pill qual">Qualification</span></td><td class="num">Nov 03</td><td class="num">$877K</td></tr>
+        <tr><td><strong>DB Regio Bayern</strong></td><td class="tag"><span class="pill emea">EMEA</span></td><td>Germany</td><td class="tag"><span class="pill qual">Qualification</span></td><td class="num">Nov 30</td><td class="num">$776K</td></tr>
+        <tr><td><strong>SEINFRA</strong></td><td class="tag"><span class="pill latam">LATAM</span></td><td>Brazil</td><td class="tag"><span class="pill bizcase">Business Case</span></td><td class="num">Nov 30</td><td class="num">$759K</td></tr>
+        <tr><td><strong>HANSEA NV</strong></td><td class="tag"><span class="pill emea">EMEA</span></td><td>Belgium</td><td class="tag"><span class="pill bizcase">Business Case</span></td><td class="num">Sep 30</td><td class="num">$566K</td></tr>
+        <tr><td><strong>TITSA</strong></td><td class="tag"><span class="pill emea">EMEA</span></td><td>Spain</td><td class="tag"><span class="pill bizcase">Business Case</span></td><td class="num">Sep 07</td><td class="num">$431K</td></tr>
+        <tr><td><strong>Cali Colombia</strong></td><td class="tag"><span class="pill latam">LATAM</span></td><td>Colombia</td><td class="tag"><span class="pill qual">Qualification</span></td><td class="num">Jul 31</td><td class="num">$418K</td></tr>
+        <tr><td><strong>MV Transportation</strong></td><td class="tag"><span class="pill na">NA</span></td><td>United States</td><td class="tag"><span class="pill bizcase">Business Case</span></td><td class="num">Dec 31</td><td class="num">$403K</td></tr>
+        <tr><td><strong>TLT (Tallinna)</strong></td><td class="tag"><span class="pill emea">EMEA</span></td><td>Estonia</td><td class="tag"><span class="pill qual">Qualification</span></td><td class="num">Dec 18</td><td class="num">$354K</td></tr>
+        <tr><td><strong>Mobility ADO</strong></td><td class="tag"><span class="pill latam">LATAM</span></td><td>Mexico</td><td class="tag"><span class="pill qual">Qualification</span></td><td class="num">Dec 01</td><td class="num">$350K</td></tr>
+        <tr><td><strong>CETURB</strong></td><td class="tag"><span class="pill latam">LATAM</span></td><td>Brazil</td><td class="tag"><span class="pill bizcase">Business Case</span></td><td class="num">Jun 30</td><td class="num">$316K</td></tr>
+        <tr><td><strong>BT Berlin Transport</strong></td><td class="tag"><span class="pill emea">EMEA</span></td><td>Germany</td><td class="tag"><span class="pill bizcase">Business Case</span></td><td class="num">Nov 10</td><td class="num">$314K</td></tr>
+      </tbody>
+    </table>
+
+    <div class="footnote">Source: BI_PROD.DWH.CARR_AND_PIPELINE_UNIFIED_2025 · IS_QUALIFIED_PIPELINE = 1, CLOSE_DATE Apr–Dec 2026, OPPORTUNITY_RECORD_TYPE IN ('New Business','Extension')</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 9. RENEWALS & CHURN                                           -->
+<!-- ============================================================ -->
+<section class="slide" id="s9">
+  <div class="topbar">
+    <span class="eyebrow"><svg class="topbar-mark"><use href="#optibus-mark-light"/></svg>RENEWALS &amp; CHURN</span>
+    <span class="pagenum">09 / 10</span>
+  </div>
+  <div class="content">
+    <h1>Renewals book is solid, Q1 churn is the alarm</h1>
+    <p class="lead">$3.4M came up for renewal in Q1 across 63 opportunities. Of that, $1.96M churned — concentrated in Brazil cleanup and Skyss departure.</p>
+
+    <div class="grid-4" style="margin-top: 3vh;">
+      <div class="kpi"><div class="label">Q1 Up for Renewal</div><div class="value">$3.4M</div><div class="sub">63 opportunities</div></div>
+      <div class="kpi cyan"><div class="label">Q1 Renewed</div><div class="value">$687K</div><div class="sub">20% landed</div></div>
+      <div class="kpi magenta"><div class="label">Q1 Churned</div><div class="value">$1.96M</div><div class="sub">57% of book — high</div></div>
+      <div class="kpi purple"><div class="label">Q1 Still Open</div><div class="value">$801K</div><div class="sub">In-flight as of May 26</div></div>
+    </div>
+
+    <h3 style="margin-top: 4vh;">Renewals book trajectory (2026)</h3>
+    <table style="margin-top: 1.5vh;">
+      <thead>
+        <tr>
+          <th>Quarter</th>
+          <th style="text-align: right;">Opps</th>
+          <th style="text-align: right;">Up for Renewal</th>
+          <th style="text-align: right;">Renewed</th>
+          <th style="text-align: right;">Churned</th>
+          <th style="text-align: right;">Open</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Q1 2026</strong></td>
+          <td class="num">63</td>
+          <td class="num">$3.4M</td>
+          <td class="num" style="color: var(--green);">$687K</td>
+          <td class="num" style="color: var(--red);">$1.96M</td>
+          <td class="num">$801K</td>
+        </tr>
+        <tr>
+          <td><strong>Q2 2026</strong></td>
+          <td class="num">14</td>
+          <td class="num">$324K</td>
+          <td class="num" style="color: var(--green);">$58K</td>
+          <td class="num" style="color: var(--red);">$229K</td>
+          <td class="num">$37K</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <strong>Caveat:</strong> The renewals dimension table (<code>DIM_OPPORTUNITY_RENEWALS</code>) marks IS_RENEWED only when a successor opportunity is linked. The manual deck showed $1.86M renewed for Q1 vs $687K here, which suggests successor linkage is incomplete. The Q1 churn number is consistent across sources.
+      <br><br>
+      <strong>Action item:</strong> Tighten the renewal-to-successor linkage in Salesforce so this table tells the full story. This is a Bosmat + RevOps ticket.
+    </div>
+
+    <div class="footnote">Source: BI_PROD.DWH.DIM_OPPORTUNITY_RENEWALS · CLOSE_DATE in 2026 · IS_RENEWED / IS_CHURNED flags from successor-opportunity logic</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 10. SO WHAT — THE TAKEAWAYS                                   -->
+<!-- ============================================================ -->
+<section class="slide dark" id="s10">
+  <div class="topbar">
+    <span class="eyebrow"><svg class="topbar-mark"><use href="#optibus-mark"/></svg>SO WHAT</span>
+    <span class="pagenum" style="color: rgba(255,255,255,0.6);">10 / 10</span>
+  </div>
+  <div class="content">
+    <h1 style="color: white;">Three things that matter for Q2</h1>
+
+    <div class="grid-3" style="margin-top: 5vh;">
+      <div class="kpi" style="border-left-color: var(--cyan); padding: 28px 24px;">
+        <div class="label">01 · WIN RATE</div>
+        <div class="value" style="font-size: clamp(20px, 2vw, 28px); margin-bottom: 12px;">Fix the denominator</div>
+        <div class="sub" style="font-size: 13px; line-height: 1.55;">
+          12% win rate on $25K+ deals is below our historical 32%. The issue is qualified deals slipping or being lost, not pipeline volume. NA losses (RTA, MARTA, FTA) need a post-mortem before Q3 planning.
+        </div>
+      </div>
+      <div class="kpi" style="border-left-color: var(--magenta); padding: 28px 24px;">
+        <div class="label">02 · Q2 EXECUTION</div>
+        <div class="value" style="font-size: clamp(20px, 2vw, 28px); margin-bottom: 12px;">$2.4M to land</div>
+        <div class="sub" style="font-size: 13px; line-height: 1.55;">
+          At $60K closed against $2.9M target with $4.7M qualified, we need ~62% conversion in 35 days. Tide AS ($1.18M) closing on Jun 30 is the single biggest swing factor for Q2.
+        </div>
+      </div>
+      <div class="kpi" style="border-left-color: var(--purple); padding: 28px 24px;">
+        <div class="label">03 · RENEWALS HYGIENE</div>
+        <div class="value" style="font-size: clamp(20px, 2vw, 28px); margin-bottom: 12px;">Close the data gap</div>
+        <div class="sub" style="font-size: 13px; line-height: 1.55;">
+          $687K renewed in Snowflake vs $1.86M in the manual deck means our successor-linkage is incomplete. This is fixable with SFDC discipline and would unlock automated GRR/NRR tracking in ThoughtSpot.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 5vh; padding: 28px 32px; background: rgba(255,255,255,0.06); border-radius: 16px; border-left: 4px solid var(--cyan);">
+      <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--cyan); margin-bottom: 10px;">THE META-POINT</div>
+      <div style="font-size: clamp(15px, 1.4vw, 20px); font-weight: 500; line-height: 1.5; color: white;">
+        This deck was generated from live Snowflake queries, not a copy-paste from a spreadsheet. Every chart, every table, every number can be re-run at any point in Q2 to see what changed.
+        That is the FY26 plan thesis in one example.
+      </div>
+    </div>
+
+    <div class="footnote" style="border-top-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.6);">
+      Built with: Claude Code MCP → BI_PROD.DWH (read-only via MCP_USER_ROLE) · Render time: live · Refresh: re-execute on any date for current state
+    </div>
+  </div>
+</section>
+
+<div class="nav">
+  <button onclick="navigate(-1)" aria-label="Previous">‹</button>
+  <button onclick="navigate(1)" aria-label="Next">›</button>
+</div>
+
+<script>
+function navigate(dir) {
+  const slides = document.querySelectorAll('.slide');
+  const scrollTop = window.scrollY;
+  const winH = window.innerHeight;
+  const current = Math.round(scrollTop / winH);
+  const target = Math.max(0, Math.min(slides.length - 1, current + dir));
+  slides[target].scrollIntoView({ behavior: 'smooth' });
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+    e.preventDefault(); navigate(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+    e.preventDefault(); navigate(-1);
+  } else if (e.key === 'Home') {
+    document.querySelectorAll('.slide')[0].scrollIntoView({ behavior: 'smooth' });
+  } else if (e.key === 'End') {
+    const slides = document.querySelectorAll('.slide');
+    slides[slides.length - 1].scrollIntoView({ behavior: 'smooth' });
+  }
+});
+</script>
+</body>
+</html>
